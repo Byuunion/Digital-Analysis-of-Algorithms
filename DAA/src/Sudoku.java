@@ -7,7 +7,7 @@ public class Sudoku {
 	public static int[][] array = new int[6][6];
 
 	public static void main(String[] args) {
-		readFile("D:/Eclipse_Workspace/DAA/test");
+		readFile("C:/Users/BenX/git/Digital_Analysis_of_Algorithms/DAA/test");
 	}
 	
 	public static void readFile(String fileName){
