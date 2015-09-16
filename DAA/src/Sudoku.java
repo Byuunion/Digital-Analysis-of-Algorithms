@@ -20,7 +20,7 @@ public class Sudoku {
 	public static ArrayList<ArrayList<Integer>> twoDArray = new ArrayList<ArrayList<Integer>>();
 
 	public static void main(String[] args) {
-		readFile("C:/Users/BenX/git/Digital_Analysis_of_Algorithms/DAA/test");
+		readFile("test2");
 		
 		System.out.println("Rows are good?: " + checkRow());
 		System.out.println("Columns are good?: " + checkCol());
@@ -96,6 +96,7 @@ public class Sudoku {
 
 	}
 	
+	// Checks rows top to bottom
 	private static boolean checkRow(){
 		// total number of rows
 		int rows = twoDArray.size();
@@ -114,6 +115,7 @@ public class Sudoku {
 		return true;
 	}
 	
+	// Checks columns left to right
 	private static boolean checkCol(){
 		// total number of columns
 		int columns = twoDArray.get(0).size();
@@ -138,12 +140,14 @@ public class Sudoku {
 		return true;
 	}
 	
+	// Checks boxes from top left to bottom right (Left to right, down, left to right)
 	private static boolean checkBox(){
+		// i is index for a box's width from first columns to next box's first column
 		for(int i = 0; i < twoDArray.get(0).size(); i += width){
 			Set<Integer> set = new HashSet<Integer>();
 			
 			//popluate the set with numbers from the box
-			//Iterates from the box's height i.e row downwards
+			//Iterates from the box's height i.e row downwards 
 			for(int j = 0; j < height; j++){
 				
 				//add the the specified number of integers from the row
