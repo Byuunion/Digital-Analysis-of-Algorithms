@@ -3,19 +3,36 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
  * To referance any part of the 2d array use this
  * System.out.println(twoDArray.get(0).get(0));
  */
 public class Sudoku {
-
+	
+	// (w x h)
 	public static int width;
 	public static int height;
+	
+	
 	public static ArrayList<ArrayList<Integer>> twoDArray = new ArrayList<ArrayList<Integer>>();
 
 	public static void main(String[] args) {
 		readFile("C:/Users/BenX/git/Digital_Analysis_of_Algorithms/DAA/test");
+		
+		System.out.println("Rows are good?: " + checkRow());
+		System.out.println("Columns are good?: " + checkCol());
+		System.out.println("Boxs are good?: " + checkBox());
+		
+		if(checkRow() && checkCol() && checkBox()){
+			System.out.println("Solved");
+		}
+		
+		else{
+			System.out.println("Bad");
+		}
 	}
 
 
@@ -59,7 +76,7 @@ public class Sudoku {
 
 			bufferReader.close();
 
-
+			/*
 			// Custom 2d Array toString
 			for (int i = 0; i < twoDArray.size(); i++) {
 				String toString = "";
@@ -71,11 +88,77 @@ public class Sudoku {
 				System.out.println(toString);
 
 			}
+			*/
 
 		} catch (IOException ex) {
 			System.out.println("Error: " + fileName);
 		}
 
+	}
+	
+	private static boolean checkRow(){
+		// total number of rows
+		int rows = twoDArray.size();
+		
+		// Check every row
+		for (int i = 0; i < rows; i++) {
+
+			for (int j = 0; j < twoDArray.get(i).size(); j++) {
+				Set<Integer> set = new HashSet<Integer>(twoDArray.get(i));
+				if (set.size() != width * height){
+					return false;
+				}
+			}
+
+		}
+		return true;
+	}
+	
+	private static boolean checkCol(){
+		// total number of columns
+		int columns = twoDArray.get(0).size();
+		
+		// Check every col going to the right
+		// i = column index
+		for (int i = 0; i < columns; i++) {
+			Set<Integer> set = new HashSet<Integer>();
+			
+			// Iterate each row downwards
+			// j = row index
+			for (int j = 0; j < twoDArray.size(); j++) {
+				
+			// populate hashset with each number for the columns
+				set.add(twoDArray.get(j).get(i));
+			}
+			
+			if (set.size() != width * height){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private static boolean checkBox(){
+		for(int i = 0; i < twoDArray.get(0).size(); i += width){
+			Set<Integer> set = new HashSet<Integer>();
+			
+			//popluate the set with numbers from the box
+			//Iterates from the box's height i.e row downwards
+			for(int j = 0; j < height; j++){
+				
+				//add the the specified number of integers from the row
+				for(int k = 0; k <= width; k++){
+					set.add(twoDArray.get(j).get(k));
+				}
+				
+			}
+			
+			if (set.size() != width * height){
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 }
