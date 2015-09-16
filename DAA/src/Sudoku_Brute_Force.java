@@ -3,23 +3,36 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
  * To referance any part of the 2d array use this
  * System.out.println(twoDArray.get(0).get(0));
  */
 public class Sudoku_Brute_Force {
-
+	
+	// (w x h)
 	public static int width;
 	public static int height;
+	
+	
 	public static ArrayList<ArrayList<Integer>> twoDArray = new ArrayList<ArrayList<Integer>>();
-	public static ArrayList<Integer> solution = new ArrayList<Integer>();
-	public static int zCounter = 0;
-	public static int countLoop = 0; 
+
 	public static void main(String[] args) {
-		readFile("H:\\git\\Digital-Analysis-of-Algorithms\\DAA\\test");
-		solver();
+		readFile("test2");
 		
+		System.out.println("Rows are good?: " + checkRow());
+		System.out.println("Columns are good?: " + checkCol());
+		System.out.println("Boxs are good?: " + checkBox());
+		
+		if(checkRow() && checkCol() && checkBox()){
+			System.out.println("Solved");
+		}
+		
+		else{
+			System.out.println("Bad");
+		}
 	}
 
 
@@ -30,8 +43,6 @@ public class Sudoku_Brute_Force {
 			String line;
 			int counter = 0;
 			int rowCounter = 0;
-			
-			
 			while ((line = bufferReader.readLine()) != null) {
 
 				String temp2 = line.trim();
@@ -56,9 +67,6 @@ public class Sudoku_Brute_Force {
 						twoDArray.add(new ArrayList<Integer>());
 						for (int i = 0; i < temp.length; i++) {
 							twoDArray.get(rowCounter).add(i, Integer.parseInt(temp[i]));
-							if (Integer.parseInt(temp[i]) == 0){
-								zCounter++;
-							}
 						}
 						rowCounter++;
 					}
@@ -68,7 +76,7 @@ public class Sudoku_Brute_Force {
 
 			bufferReader.close();
 
-
+			/*
 			// Custom 2d Array toString
 			for (int i = 0; i < twoDArray.size(); i++) {
 				String toString = "";
@@ -80,6 +88,7 @@ public class Sudoku_Brute_Force {
 				System.out.println(toString);
 
 			}
+			*/
 
 		} catch (IOException ex) {
 			System.out.println("Error: " + fileName);
@@ -87,45 +96,73 @@ public class Sudoku_Brute_Force {
 
 	}
 	
-	public static ArrayList<Integer> solver(){
-		boolean go;
-		for(int i = 0; i < zCounter; i++){
-			solution.add(1);
-		}
-		//NEED TO BE RECURSIVE!!!
-		int changeCh = solution.size() - 1; //placeholder
+	// Checks rows top to bottom
+	private static boolean checkRow(){
+		// total number of rows
+		int rows = twoDArray.size();
 		
-		go = !(checker(solution));
-		
-		while (go == true){		
-			if(solution.get(changeCh) == width*height){ //if number at placeholder = max number change placeholder
-				changeCh--;
+		// Check every row
+		for (int i = 0; i < rows; i++) {
+
+			for (int j = 0; j < twoDArray.get(i).size(); j++) {
+				Set<Integer> set = new HashSet<Integer>(twoDArray.get(i));
+				if (set.size() != width * height){
+					return false;
+				}
 			}
-			
-			else{						
-				solution.set(changeCh, solution.get(changeCh) + 1);
-			
-			}
-			go = !(checker(solution));
+
 		}
-		
-		
-		
-		return null;
-		}
-			
-	
-	
-	public static boolean checker(ArrayList<Integer> x){
-		System.out.println(x);
-		if(countLoop == 10){
-			return true;
-		}
-		
-		countLoop++;
-		return false;
-		
+		return true;
 	}
 	
+	// Checks columns left to right
+	private static boolean checkCol(){
+		// total number of columns
+		int columns = twoDArray.get(0).size();
+		
+		// Check every col going to the right
+		// i = column index
+		for (int i = 0; i < columns; i++) {
+			Set<Integer> set = new HashSet<Integer>();
+			
+			// Iterate each row downwards
+			// j = row index
+			for (int j = 0; j < twoDArray.size(); j++) {
+				
+			// populate hashset with each number for the columns
+				set.add(twoDArray.get(j).get(i));
+			}
+			
+			if (set.size() != width * height){
+				return false;
+			}
+		}
+		return true;
+	}
 	
+	// Checks boxes from top left to bottom right (Left to right, down, left to right)
+	private static boolean checkBox(){
+		// i is index for a box's width from first columns to next box's first column
+		for(int i = 0; i < twoDArray.get(0).size(); i += width){
+			Set<Integer> set = new HashSet<Integer>();
+			
+			//popluate the set with numbers from the box
+			//Iterates from the box's height i.e row downwards 
+			for(int j = 0; j < height; j++){
+				
+				//add the the specified number of integers from the row
+				for(int k = 0; k <= width; k++){
+					set.add(twoDArray.get(j).get(k));
+				}
+				
+			}
+			
+			if (set.size() != width * height){
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 }
