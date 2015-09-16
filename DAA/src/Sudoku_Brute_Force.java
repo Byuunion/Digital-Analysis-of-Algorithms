@@ -10,7 +10,7 @@ import java.util.Set;
  * To referance any part of the 2d array use this
  * System.out.println(twoDArray.get(0).get(0));
  */
-public class Sudoku {
+public class Sudoku_Brute_Force {
 	
 	// (w x h)
 	public static int width;
