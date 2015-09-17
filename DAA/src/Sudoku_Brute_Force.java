@@ -43,6 +43,7 @@ public class Sudoku_Brute_Force {
 		solver();
 		// System.out.println("Finished");
 		time.stop();
+		System.out.println("The Number of Zeros were : " + solution.size());
 		System.out.println("The Final Solution is: " + solution);
 		System.out.println("It took " + time.getDuration() + " milliseconds to solve this Sudoku");
 
