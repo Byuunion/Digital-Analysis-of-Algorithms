@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,6 +8,11 @@ import java.util.Set;
 /*
  * To referance any part of the 2d array use this
  * System.out.println(twoDArray.get(0).get(0));
+ */
+/**
+ * Solves any given Sudoku puzzle of any size.
+ * @author Gianluca Bastia, Arunn Chanthirakanthan & Benson Xu
+ *
  */
 public class Sudoku_Brute_Force {
 
@@ -23,6 +27,10 @@ public class Sudoku_Brute_Force {
 	public static int countLoop = 0;
 	public static Timer time = new Timer();
 
+	/**
+	 * This is the main functions that solves any given sudoku puzzle.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		/*
 		 * readFile("test2"); System.out.println("Rows are good?: " +
@@ -40,7 +48,10 @@ public class Sudoku_Brute_Force {
 
 	}
 	
-	// Function reads in the file input and saves the sudoku in a 2d ArrayList
+	/**
+	 * This function reads in the file input and saves the sudoku in a two dimensional ArrayList
+	 * @param fileName The sudoku file that will be entered and used.  
+	 */
 	public static void readFile(String fileName) {
 		try {
 			FileReader inputFile = new FileReader(fileName);
@@ -78,6 +89,11 @@ public class Sudoku_Brute_Force {
 	}
 	
 	// Function creates all possible solutions for sudoku. Each solution is checked before creating the next solution
+	/**
+	 * This function create all possible solutions for the sudoku puzzle, and each solutions is checked before creating the next solution
+	 * 
+	 * @return
+	 */
 	public static ArrayList<Integer> solver() {
 		boolean go;
 		int chChange;
@@ -145,6 +161,11 @@ public class Sudoku_Brute_Force {
 	}
 
 	//compile solutions from checkers and determine next step
+	/**
+	 * This function checks 
+	 * @param x
+	 * @return
+	 */
 	public static boolean checker(ArrayList<ArrayList<Integer>> x) {
 		// System.out.println();
 		// System.out.println(countLoop+1);
@@ -167,6 +188,11 @@ public class Sudoku_Brute_Force {
 	}
 
 	// Checks rows top to bottom
+	/**
+	 * This function checks the rows top to bottom
+	 * @param x
+	 * @return
+	 */
 	private static boolean checkRow(ArrayList<ArrayList<Integer>> x) {
 		int rows = x.size();											// total number of rows
 		for (int i = 0; i < rows; i++) {								// Check every row
@@ -179,6 +205,11 @@ public class Sudoku_Brute_Force {
 	}
 
 	// Checks columns left to right
+	/**
+	 * This function checks the columns from left to right
+	 * @param x
+	 * @return Returns true if the columns fit the sudoku puzzle or false if the puzzle is incorrect.
+	 */
 	private static boolean checkCol(ArrayList<ArrayList<Integer>> x) {
 		int columns = x.get(0).size();	  								// total number of columns
 		for (int i = 0; i < columns; i++) {								// Check every col going to the right i = column index
@@ -195,10 +226,15 @@ public class Sudoku_Brute_Force {
 				return false;
 			}*/
 		}
-		return true;
+		return true; 
 	}
 
 	// Checks boxes from top left to bottom right (Left to right, down, left to right
+	/**
+	 * This function checks the boxes of the sudoku puzzle from the top left to bottom right depening on the size of the sudoku puzzle.
+	 * @param x
+	 * @return Returns true if the rows fit the sudoku puzzle or false if the puzzle is incorrect.
+	 */
 	private static boolean checkBox(ArrayList<ArrayList<Integer>> x) {
 		for (int i = 0; i < x.get(0).size(); i += width) {				// i is index for a box's width from first columns to next 
 			Set<Integer> set = new HashSet<Integer>();					// box's first columnbox's first column
