@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Scanner;
 
 /*
  * To referance any part of the 2d array use this
@@ -38,14 +39,20 @@ public class Sudoku_Brute_Force {
 		 * System.out.println("Boxs are good?: " + checkBox());
 		 * 
 		 */
+		Scanner userinput = new Scanner(System.in);
+		System.out.print("Enter your file path: ");
+		String filename = userinput.next();
+		userinput.close();
+		
 		time.start();
-		readFile("test7");
-		solver();
+		readFile(filename);
+		
 		// System.out.println("Finished");
 		time.stop();
 		//System.out.println("The Number of Zeros were : " + solution.size());
 		//System.out.println("The Final Solution is: " + solution);
-		System.out.println("It took " + time.getDuration() + " milliseconds to solve this Sudoku");
+		System.out.println("It took " + time.getDuration() + " milliseconds to run this Sudoku program!");
+
 
 	}
 	
@@ -67,11 +74,26 @@ public class Sudoku_Brute_Force {
 				} else {														
 					String[] temp = line.split(" ");
 					if (counter == 0) {											// First line after comments is width of sudoku
+						if(temp.length != 1){									// Checks if no width exists
+							bufferReader.close();
+							return;							
+						}
 						width = Integer.parseInt(temp[0]);						
 					} else if (counter == 1) {									// Second line after comments is length of sudoku
+						if(temp.length != 1 ){									// Checks if no height exists
+							bufferReader.close();
+							return;							
+						}
 						height = Integer.parseInt(temp[0]);
 					} else {													// All lines below are the rows of the sudoku
 						twoDArray.add(new ArrayList<Integer>());				// Create the ArrayList for each row
+						
+						if(temp.length != width * height){
+							System.out.println("Sudoku puzzle invalid");		// Check if puzzle dimensions are valid
+							bufferReader.close();
+							return;
+						}
+						
 						for (int i = 0; i < temp.length; i++) {
 							twoDArray.get(counter - 2).add(i, Integer.parseInt(temp[i]));
 							if (Integer.parseInt(temp[i]) == 0) {				// if the value in the row is a 0
@@ -83,8 +105,10 @@ public class Sudoku_Brute_Force {
 					counter++;													// keep count of lines after comments
 				}	
 			}
+			
 			bufferReader.close();
-		} catch (IOException ex) {
+			solver();
+		} catch (IOException | NumberFormatException ex) {
 			System.out.println("Error: " + fileName);
 		}
 	}
@@ -101,6 +125,11 @@ public class Sudoku_Brute_Force {
 		int repsCounter;
 		maxNum = height * width;
 
+		if(twoDArray.size() != width * height){
+			System.out.println("Sudoku puzzle invalid");		// Check if puzzle dimensions are valid
+			return null;
+		}
+		
 		for (int i = 0; i < zCounter; i++) { 								// create solution array with 1s
 			solution.add(1);												// zCounter is the number of 0s
 		}
