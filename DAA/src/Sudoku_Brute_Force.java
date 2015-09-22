@@ -107,8 +107,21 @@ public class Sudoku_Brute_Force {
 		}
 		
 		System.out.println("BOX CHECKERS");
+			0,0 0,1
+			1,0 1,1
+			
+			0,2 0,3
+			1,2 1,3
+			
+			2,0 2,1
+			3,0 3,1
+			
+			2,2 2,3
+			3,2 3,3
 		
-			for(int h = 0; h < width * height; h+= height){				// h is index for box's height
+			for(int w = 0; w <= width * height; w+=2){						// for each box	
+				for(int h = 0; h <= width * height; h+= 2){				// h is index for box's height
+				}
 				
 					for (int k = 0; k < width; k++) {						// add the the specified number of integers from the row
 						Set<Integer> set = new HashSet<Integer>();					// box's first columnbox's first column
