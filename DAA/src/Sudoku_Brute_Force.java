@@ -39,6 +39,96 @@ public class Sudoku_Brute_Force {
 		 * System.out.println("Boxs are good?: " + checkBox());
 		 * 
 		 */
+		
+		twoDArray.add(new ArrayList<Integer>());
+		twoDArray.add(new ArrayList<Integer>());
+		twoDArray.add(new ArrayList<Integer>());
+		twoDArray.add(new ArrayList<Integer>());
+		
+		twoDArray.get(0).add(0, 3);
+		twoDArray.get(0).add(1, 1);
+		twoDArray.get(0).add(2, 2);
+		twoDArray.get(0).add(3, 4);
+		
+		twoDArray.get(1).add(0, 4);
+		twoDArray.get(1).add(1, 2);
+		twoDArray.get(1).add(2, 3);
+		twoDArray.get(1).add(3, 1);
+		
+		twoDArray.get(2).add(0, 1);
+		twoDArray.get(2).add(1, 3);
+		twoDArray.get(2).add(2, 4);
+		twoDArray.get(2).add(3, 2);
+		
+		twoDArray.get(3).add(0, 2);
+		twoDArray.get(3).add(1, 4);
+		twoDArray.get(3).add(2, 1);
+		twoDArray.get(3).add(3, 3);
+		
+		width = 2;
+		height = 2;
+							
+		System.out.println("Sudoku Puzzle Input");
+		
+		for (int i = 0; i < twoDArray.size(); i++) {							// print the completed sudoku
+			System.out.println(twoDArray.get(i) + " ");
+		}
+		
+		System.out.println("\n ROW CHECKERS");
+		
+		int rows = twoDArray.size();											// total number of rows
+		for (int i = 0; i < rows; i++) {								// Check every row
+			Set<Integer> set = new HashSet<Integer>(twoDArray.get(i)); 
+			System.out.println(twoDArray.get(i).toString());
+			if (set.size() != width * height) {							// if hashmap does not contain all values return false
+				System.out.println("Row Bad");
+			}
+			else System.out.println("Rows good");
+		}
+		
+		System.out.println("\n COLUMN CHECKERS");
+		
+		int columns = twoDArray.get(0).size();	  								// total number of columns
+		for (int i = 0; i < columns; i++) {								// Check every col going to the right i = column index
+			
+			for(int p = 0; p < twoDArray.size(); p++){
+				System.out.println("[" + twoDArray.get(p).get(i) + "]");
+			}
+			
+			Set<Integer> set = new HashSet<Integer>();
+			for (int j = 0; j < twoDArray.size(); j++) {						//Iterate each row downwards j = row index
+				if (!set.add(twoDArray.get(j).get(i))){
+					System.out.println("Column Bad \n");
+				}
+			}
+			if (set.size() == width * height) {							// if hashmap does not contain all values return false
+				System.out.println("Column Good \n");
+			}
+		}
+		
+		System.out.println("BOX CHECKERS");
+		
+			for(int h = 0; h < width * height; h+= height){				// h is index for box's height
+				
+					for (int k = 0; k < width; k++) {						// add the the specified number of integers from the row
+						Set<Integer> set = new HashSet<Integer>();					// box's first columnbox's first column
+						ArrayList<Integer> a = new ArrayList<Integer>();
+						
+						a.add(twoDArray.get(h).get(k));
+						if(!set.add(twoDArray.get(h).get(k))){
+							System.out.println("Box bad");
+						}
+						
+						System.out.println(a.toString());
+					}
+
+			}
+		
+			System.out.println("\nRows are good: " + checkRow(twoDArray));
+			System.out.println("Columns are good: " + checkCol(twoDArray));
+			System.out.println("Boxs are good: " + checkBox(twoDArray));
+		/*
+	
 		Scanner userinput = new Scanner(System.in);
 		System.out.print("Enter your file path: ");
 		String filename = userinput.next();
@@ -52,8 +142,7 @@ public class Sudoku_Brute_Force {
 		//System.out.println("The Number of Zeros were : " + solution.size());
 		//System.out.println("The Final Solution is: " + solution);
 		System.out.println("It took " + time.getDuration() + " milliseconds to run this Sudoku program!");
-
-
+		*/
 	}
 	
 	/**
@@ -95,6 +184,11 @@ public class Sudoku_Brute_Force {
 						}
 						
 						for (int i = 0; i < temp.length; i++) {
+							if(Integer.parseInt(temp[i]) > width * height){
+								System.out.println("Sudoku puzzle invalid");		// Check if puzzle dimensions are valid
+								bufferReader.close();
+								return;
+							}
 							twoDArray.get(counter - 2).add(i, Integer.parseInt(temp[i]));
 							if (Integer.parseInt(temp[i]) == 0) {				// if the value in the row is a 0
 								pairs.add(zCounter, new Pair(counter - 2, i));	//save the coordinates of the 0 for later replacement
@@ -226,8 +320,8 @@ public class Sudoku_Brute_Force {
 	private static boolean checkRow(ArrayList<ArrayList<Integer>> x) {
 		int rows = x.size();											// total number of rows
 		for (int i = 0; i < rows; i++) {								// Check every row
-			Set<Integer> set = new HashSet<Integer>(x.get(i));
-			if (set.size() != width * height) {							// if hashmap does not contain all values return false
+			Set<Integer> set = new HashSet<Integer>(x.get(i));			// No iteration needed for initializing the hashset with the row
+			if (set.size() != width * height) {							// if hashset does not contain all values return false
 				return false;
 			}
 		}
@@ -245,11 +339,8 @@ public class Sudoku_Brute_Force {
 		for (int i = 0; i < columns; i++) {								// Check every col going to the right i = column index
 			Set<Integer> set = new HashSet<Integer>();
 			for (int j = 0; j < x.size(); j++) {						//Iterate each row downwards j = row index
-				if (set.contains(x.get(j).get(i))){
+				if (!set.add(x.get(j).get(i))){
 					return false;
-				}
-				else{
-				set.add(x.get(j).get(i)); 								// populate hashset with each number for the columns
 				}
 			}
 			/*if (set.size() != width * height) {							// if hashmap does not contain all values return false
