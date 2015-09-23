@@ -38,34 +38,65 @@ public class Sudoku_Brute_Force {
 		 * checkRow()); System.out.println("Columns are good?: " + checkCol());
 		 * System.out.println("Boxs are good?: " + checkBox());
 		 * 
+		 *  6 5 1 3 4 2
+		 *  4 3 2 1 6 5
+		 *  2 4 6 5 1 3
+		 *  5 1 3 4 2 6
+		 *  1 2 5 6 3 4
+		 *  3 6 4 2 5 1
+		 *  
 		 */
 		
 		twoDArray.add(new ArrayList<Integer>());
 		twoDArray.add(new ArrayList<Integer>());
 		twoDArray.add(new ArrayList<Integer>());
 		twoDArray.add(new ArrayList<Integer>());
+		twoDArray.add(new ArrayList<Integer>());
+		twoDArray.add(new ArrayList<Integer>());
 		
-		twoDArray.get(0).add(0, 3);
-		twoDArray.get(0).add(1, 1);
-		twoDArray.get(0).add(2, 2);
-		twoDArray.get(0).add(3, 4);
+		twoDArray.get(0).add(0, 6);
+		twoDArray.get(0).add(1, 5);
+		twoDArray.get(0).add(2, 1);
+		twoDArray.get(0).add(3, 3);
+		twoDArray.get(0).add(4, 4);
+		twoDArray.get(0).add(5, 2);
 		
 		twoDArray.get(1).add(0, 4);
-		twoDArray.get(1).add(1, 2);
-		twoDArray.get(1).add(2, 3);
+		twoDArray.get(1).add(1, 3);
+		twoDArray.get(1).add(2, 2);
 		twoDArray.get(1).add(3, 1);
+		twoDArray.get(1).add(4, 6);
+		twoDArray.get(1).add(5, 5);
 		
-		twoDArray.get(2).add(0, 1);
-		twoDArray.get(2).add(1, 3);
-		twoDArray.get(2).add(2, 4);
-		twoDArray.get(2).add(3, 2);
+		twoDArray.get(2).add(0, 2);
+		twoDArray.get(2).add(1, 4);
+		twoDArray.get(2).add(2, 6);
+		twoDArray.get(2).add(3, 5);
+		twoDArray.get(2).add(4, 1);
+		twoDArray.get(2).add(5, 3);
 		
-		twoDArray.get(3).add(0, 2);
-		twoDArray.get(3).add(1, 4);
-		twoDArray.get(3).add(2, 1);
-		twoDArray.get(3).add(3, 3);
+		twoDArray.get(3).add(0, 5);
+		twoDArray.get(3).add(1, 1);
+		twoDArray.get(3).add(2, 3);
+		twoDArray.get(3).add(3, 4);
+		twoDArray.get(3).add(4, 2);
+		twoDArray.get(3).add(5, 6);
 		
-		width = 2;
+		twoDArray.get(4).add(0, 1);
+		twoDArray.get(4).add(1, 2);
+		twoDArray.get(4).add(2, 5);
+		twoDArray.get(4).add(3, 6);
+		twoDArray.get(4).add(4, 3);
+		twoDArray.get(4).add(5, 4);
+		
+		twoDArray.get(5).add(0, 3);
+		twoDArray.get(5).add(1, 6);
+		twoDArray.get(5).add(2, 4);
+		twoDArray.get(5).add(3, 2);
+		twoDArray.get(5).add(4, 5);
+		twoDArray.get(5).add(5, 1);
+		
+		width = 3;
 		height = 2;
 							
 		System.out.println("Sudoku Puzzle Input");
@@ -116,32 +147,48 @@ public class Sudoku_Brute_Force {
 			
 			
 		*/
-			int wOffset = 0;
-			int hOffset = 0;
-			height = 2;
-			width = 2;
-			for(int i = 0; i < width * height; i++){						// for each box
-				Set<Integer> set = new HashSet<Integer>();					// box's first columnbox's first column
-				ArrayList<Integer> a = new ArrayList<Integer>();
-				
-				for(int p = 0; p < height; p++){							// goes across
-					
-				
-					for(int j = 0; j < height; j++){				// j is index for box's height
-						
-						for (int k = 0; k < width; k++) {						// add the the specified number of integers from the row
-							a.add(twoDArray.get(j + hOffset).get(k + wOffset));
-							if(!set.add(twoDArray.get(j + hOffset).get(k + wOffset))){
-								System.out.println("Box bad");
-							}
-							
-						}
-						wOffset += 1;
-					}
-				hOffset += 1;
+		int wOffset = 0;
+		int hOffset = 0;
+		int numboxes = height*width;
+		
+		for(int boxIndex = 0; boxIndex < numboxes; boxIndex++){
+			
+			Set<Integer> set = new HashSet<Integer>();
+			String boxContents = "\n";
+			for(int row = hOffset; row < hOffset + height; row++){
+				for(int col = wOffset; col < wOffset + width; col++){
+					System.out.println(row + " " + col);
+					boxContents += twoDArray.get(row).get(col)+",";
+					set.add(twoDArray.get(row).get(col));
 				}
-				System.out.println(a.toString());
+				boxContents +="\n";
 			}
+			
+			if(set.size()!=6){
+				System.out.println(boxContents);
+				System.out.println("Box bad");
+			}
+			else{
+				System.out.println(boxContents);
+				System.out.println("Box good");
+			}
+			
+			// Apply offsets for next run
+			System.out.println(1 % 2);
+
+			System.out.println((boxIndex + 2) + " " + height + " " + (boxIndex + 2) % height);
+			if((boxIndex + 2 % height) == 1){					// Whenever the row is finished
+				wOffset = 0;
+				hOffset = height * boxIndex / width;
+				System.out.println("XXXXXXXXXXXXX");
+			}
+			else{														// Still in the same row
+				wOffset = width;
+				
+				System.out.println("wOffset: " + wOffset + "\n");
+			}
+
+		}
 		
 			System.out.println("\nRows are good: " + checkRow(twoDArray));
 			System.out.println("Columns are good: " + checkCol(twoDArray));
