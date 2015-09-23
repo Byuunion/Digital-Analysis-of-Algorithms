@@ -94,7 +94,7 @@ public class Sudoku_Brute_Force {
 		twoDArray.get(5).add(2, 4);
 		twoDArray.get(5).add(3, 2);
 		twoDArray.get(5).add(4, 5);
-		twoDArray.get(5).add(5, 1);
+		twoDArray.get(5).add(5, 6);
 		
 		width = 3;
 		height = 2;
@@ -105,6 +105,7 @@ public class Sudoku_Brute_Force {
 			System.out.println(twoDArray.get(i) + " ");
 		}
 		
+		/*
 		System.out.println("\n ROW CHECKERS");
 		
 		int rows = twoDArray.size();											// total number of rows
@@ -137,34 +138,51 @@ public class Sudoku_Brute_Force {
 			}
 		}
 		
+	*/
 		System.out.println("BOX CHECKERS");
-		/*
-			0,0 0,1 		0,2 0,3
-			1,0 1,1			1,2 1,3
-		
-			2,0 2,1			2,2 2,3			
-			3,0 3,1			3,2 3,3
-			
-			
-		*/
-		int wOffset = 0;
+
+		int wOffset;
 		int hOffset = 0;
 		int numboxes = height*width;
 		
 		for(int boxIndex = 0; boxIndex < numboxes; boxIndex++){
+			wOffset = 0;
+			
+			
+			// Apply offsets for the box check
+			//System.out.println(3 % 2 + "ZZZZZZZZZZZZZZZZZZZZZZ");
+			//System.out.println((boxIndex + 1) + " " + height + " " + (boxIndex + 1) % height);
+			//System.out.println((boxIndex + 1 % height) == 1);
+			
+			if(((boxIndex + 1) % height) > 0){					// Whenever the box is at the start of the row
+				//System.out.println("XXXXXXXXXXXXX");
+				wOffset = 0;
+				hOffset += height * ((boxIndex) / width);
+				//System.out.println(height + " " + (boxIndex) / height);
+				
+			}
+			else{														// Still in the same row
+				//System.out.println("YYYYYYYYYYYYYYYYYY");
+				wOffset += width;
+				
+				hOffset = height * (boxIndex) / width;
+
+				//System.out.println("wOffset: " + wOffset + "\n");
+			}
 			
 			Set<Integer> set = new HashSet<Integer>();
 			String boxContents = "\n";
 			for(int row = hOffset; row < hOffset + height; row++){
 				for(int col = wOffset; col < wOffset + width; col++){
-					System.out.println(row + " " + col);
+				//System.out.println(row + " " + col);
 					boxContents += twoDArray.get(row).get(col)+",";
 					set.add(twoDArray.get(row).get(col));
 				}
 				boxContents +="\n";
 			}
 			
-			if(set.size()!=6){
+			// Change this size check to just if(set.add(xxxxx))
+			if(set.size()!= width * height){
 				System.out.println(boxContents);
 				System.out.println("Box bad");
 			}
@@ -173,20 +191,7 @@ public class Sudoku_Brute_Force {
 				System.out.println("Box good");
 			}
 			
-			// Apply offsets for next run
-			System.out.println(1 % 2);
-
-			System.out.println((boxIndex + 2) + " " + height + " " + (boxIndex + 2) % height);
-			if((boxIndex + 2 % height) == 1){					// Whenever the row is finished
-				wOffset = 0;
-				hOffset = height * boxIndex / width;
-				System.out.println("XXXXXXXXXXXXX");
-			}
-			else{														// Still in the same row
-				wOffset = width;
-				
-				System.out.println("wOffset: " + wOffset + "\n");
-			}
+			
 
 		}
 		
