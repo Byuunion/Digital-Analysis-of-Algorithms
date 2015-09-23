@@ -107,34 +107,40 @@ public class Sudoku_Brute_Force {
 		}
 		
 		System.out.println("BOX CHECKERS");
-			0,0 0,1
-			1,0 1,1
-			
-			0,2 0,3
-			1,2 1,3
-			
-			2,0 2,1
-			3,0 3,1
-			
-			2,2 2,3
-			3,2 3,3
+		/*
+			0,0 0,1 		0,2 0,3
+			1,0 1,1			1,2 1,3
 		
-			for(int w = 0; w <= width * height; w+=2){						// for each box	
-				for(int h = 0; h <= width * height; h+= 2){				// h is index for box's height
-				}
+			2,0 2,1			2,2 2,3			
+			3,0 3,1			3,2 3,3
+			
+			
+		*/
+			int wOffset = 0;
+			int hOffset = 0;
+			height = 2;
+			width = 2;
+			for(int i = 0; i < width * height; i++){						// for each box
+				Set<Integer> set = new HashSet<Integer>();					// box's first columnbox's first column
+				ArrayList<Integer> a = new ArrayList<Integer>();
 				
-					for (int k = 0; k < width; k++) {						// add the the specified number of integers from the row
-						Set<Integer> set = new HashSet<Integer>();					// box's first columnbox's first column
-						ArrayList<Integer> a = new ArrayList<Integer>();
+				for(int p = 0; p < height; p++){							// goes across
+					
+				
+					for(int j = 0; j < height; j++){				// j is index for box's height
 						
-						a.add(twoDArray.get(h).get(k));
-						if(!set.add(twoDArray.get(h).get(k))){
-							System.out.println("Box bad");
+						for (int k = 0; k < width; k++) {						// add the the specified number of integers from the row
+							a.add(twoDArray.get(j + hOffset).get(k + wOffset));
+							if(!set.add(twoDArray.get(j + hOffset).get(k + wOffset))){
+								System.out.println("Box bad");
+							}
+							
 						}
-						
-						System.out.println(a.toString());
+						wOffset += 1;
 					}
-
+				hOffset += 1;
+				}
+				System.out.println(a.toString());
 			}
 		
 			System.out.println("\nRows are good: " + checkRow(twoDArray));
