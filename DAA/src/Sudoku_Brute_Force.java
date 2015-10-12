@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Scanner;
@@ -196,7 +197,7 @@ public class Sudoku_Brute_Force {
 	public static boolean checker(ArrayList<ArrayList<Integer>> x) {
 		// System.out.println();
 		// System.out.println(countLoop+1);
-		if (checkRows(x) && checkCols(x) && checkBoxes(x, 0, 0)) {					// if all checks are true sudoku is complete
+		if (checkRowsv2(x) && checkColsv2(x) && checkBoxes(x, 0, 0)) {					// if all checks are true sudoku is complete
 			System.out.println("The Complete Sudoku: ");					
 			for (int i = 0; i < x.size(); i++) {							// print the completed sudoku
 				System.out.println(x.get(i) + " ");
@@ -242,16 +243,10 @@ public class Sudoku_Brute_Force {
 		for (int i = 0; i < columns; i++) {								// Check every col going to the right i = column index
 			Set<Integer> set = new HashSet<Integer>();
 			for (int j = 0; j < x.size(); j++) {						//Iterate each row downwards j = row index
-				if (set.contains(x.get(j).get(i))){
+				if(!(set.add(x.get(j).get(i)))){
 					return false;
 				}
-				else{
-				set.add(x.get(j).get(i)); 								// populate hashset with each number for the columns
-				}
 			}
-			/*if (set.size() != width * height) {							// if hashmap does not contain all values return false
-				return false;
-			}*/
 		}
 		return true; 
 	}
@@ -285,56 +280,55 @@ public class Sudoku_Brute_Force {
 		return checkBoxes(x, 0, c + width);
 	}
 	
+	// Uses an array to check for duplicates in rows. It is much faster
 	private static boolean checkRowsv2(ArrayList<ArrayList<Integer>> x) {
-		
-		ArrayList<Integer> a = new ArrayList<Integer>(10);
-		
-		int aa[] = new int[10]; 
-		
-		for(int i = 0; i < aa.length; i++)
-		System.out.println(aa[i]);
-		
+		int aa[] = new int[maxNum]; 
 		int rows = x.size();											// total number of rows
 		for (int i = 0; i < rows; i++) {								// Check every row
-			Set<Integer> set = new HashSet<Integer>(x.get(i));
-			if (set.size() != width * height) {							// if hashmap does not contain all values return false
-				return false;
+			
+			for(int j = 0; j < x.get(i).size(); j++){
+				if((aa[x.get(i).get(j) - 1] += 1) > 1){
+					return false;
+				}
 			}
+			
+			for(int k = 0; k < aa.length; k++){
+				if(!(aa[k] == 1)){
+					return false;
+				}
+			}
+			Arrays.fill(aa, 0);
 		}
 		return true;
 	}
 
-	// Checks columns left to right
-	/**
-	 * This function checks the columns from left to right
-	 * @param x
-	 * @return Returns true if the columns fit the sudoku puzzle or false if the puzzle is incorrect.
-	 */
+	// Uses an array to check for duplicates in columns
 	private static boolean checkColsv2(ArrayList<ArrayList<Integer>> x) {
+		
 		int columns = x.get(0).size();	  								// total number of columns
+		
 		for (int i = 0; i < columns; i++) {								// Check every col going to the right i = column index
-			Set<Integer> set = new HashSet<Integer>();
+			int aa[] = new int[maxNum]; 
+			
 			for (int j = 0; j < x.size(); j++) {						//Iterate each row downwards j = row index
-				if (set.contains(x.get(j).get(i))){
+				
+				if((aa[x.get(j).get(i) - 1] += 1) > 1){
 					return false;
 				}
-				else{
-				set.add(x.get(j).get(i)); 								// populate hashset with each number for the columns
+				
+				for(int k = 0; k < aa.length; k++){
+					if(!(aa[k] == 1)){
+						return false;
+					}
 				}
+				
 			}
-			/*if (set.size() != width * height) {							// if hashmap does not contain all values return false
-				return false;
-			}*/
+			Arrays.fill(aa, 0);
 		}
 		return true; 
 	}
 
-	// Checks boxes from top left to bottom right (Left to right, down, left to right
-	/**
-	 * This function checks the boxes of the sudoku puzzle from the top left to bottom right depending on the size of the sudoku puzzle.
-	 * @param x The sudoku puzzle. 
-	 * @return Returns true if all the boxes in the sudoku puzzle are a valid solution to the puzzle and returns false if otherwise.
-	 */
+	// Uses an array to check for duplicates in boxes
 	private static boolean checkBoxesv2(ArrayList<ArrayList<Integer>> x, int r, int c) {
 	
 		Set<Integer> set = new HashSet<Integer>();
