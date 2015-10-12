@@ -94,10 +94,11 @@ public class Sudoku_Brute_Force {
 		twoDArray.get(5).add(2, 4);
 		twoDArray.get(5).add(3, 2);
 		twoDArray.get(5).add(4, 5);
-		twoDArray.get(5).add(5, 6);
+		twoDArray.get(5).add(5, 1);
 		
 		width = 3;
 		height = 2;
+		maxNum = width * height;
 							
 		System.out.println("Sudoku Puzzle Input");
 		
@@ -140,7 +141,7 @@ public class Sudoku_Brute_Force {
 		
 	*/
 		System.out.println("BOX CHECKERS");
-
+/*
 		int wOffset;
 		int hOffset = 0;
 		int numboxes = height*width;
@@ -194,10 +195,10 @@ public class Sudoku_Brute_Force {
 			
 
 		}
-		
+		*/
 			System.out.println("\nRows are good: " + checkRow(twoDArray));
 			System.out.println("Columns are good: " + checkCol(twoDArray));
-			System.out.println("Boxs are good: " + checkBox(twoDArray));
+			System.out.println("Boxs are good: " + checkBox(twoDArray, 0, 0));
 		/*
 	
 		Scanner userinput = new Scanner(System.in);
@@ -214,6 +215,7 @@ public class Sudoku_Brute_Force {
 		//System.out.println("The Final Solution is: " + solution);
 		System.out.println("It took " + time.getDuration() + " milliseconds to run this Sudoku program!");
 		*/
+		
 	}
 	
 	/**
@@ -364,7 +366,7 @@ public class Sudoku_Brute_Force {
 	public static boolean checker(ArrayList<ArrayList<Integer>> x) {
 		// System.out.println();
 		// System.out.println(countLoop+1);
-		if (checkRow(x) && checkCol(x) && checkBox(x)) {					// if all checks are true sudoku is complete
+		if (checkRow(x) && checkCol(x) && checkBox(x, 0, 0)) {					// if all checks are true sudoku is complete
 			System.out.println("The Complete Sudoku: ");					
 			for (int i = 0; i < x.size(); i++) {							// print the completed sudoku
 				System.out.println(x.get(i) + " ");
@@ -423,30 +425,35 @@ public class Sudoku_Brute_Force {
 
 	// Checks boxes from top left to bottom right (Left to right, down, left to right
 	/**
-	 * This function checks the boxes of the sudoku puzzle from the top left to bottom right depening on the size of the sudoku puzzle.
-	 * @param x
-	 * @return Returns true if the rows fit the sudoku puzzle or false if the puzzle is incorrect.
+	 * This function checks the boxes of the sudoku puzzle from the top left to bottom right depending on the size of the sudoku puzzle.
+	 * @param x The sudoku puzzle. 
+	 * @return Returns true if all the boxes in the sudoku puzzle are a valid solution to the puzzle and returns false if otherwise.
 	 */
-	private static boolean checkBox(ArrayList<ArrayList<Integer>> x) {
-		for (int i = 0; i < x.get(0).size(); i += width) {				// i is index for a box's width from first columns to next 
-			Set<Integer> set = new HashSet<Integer>();					// box's first columnbox's first column
+	private static boolean checkBox(ArrayList<ArrayList<Integer>> x, int r, int c) {
 
-			// popluate the set with numbers from the box
-			for (int j = 0; j < height; j++) {							// Iterates from the box's height i.e row downwards														
-				for (int k = 0; k < width; k++) {						// add the the specified number of integers from the row
-					if(set.contains(x.get(j).get(k))){
-						return false;
-					}
-					else{
-					set.add(x.get(j).get(k));
-					}
+		
+		Set<Integer> set = new HashSet<Integer>();
+		
+		
+		for (int k = c; k <= c + width-1; k++){	
+			for(int j = r; j <= r + height-1; j++){
+				System.out.println("Column " + k);
+				System.out.println("Row " + j);
+				if(!(set.add(x.get(j).get(k)))){
+					return false;
 				}
-					
-			}
-			/*if (set.size() != width * height) {							// if hashmap does not contain all values return false
-				return false;
-			}*/
-		}
+		}	
+	}
+		
+		
+		
+		if ((r == maxNum - height) && (c == maxNum - width))
 		return true;
+		
+		else if (r < maxNum - height) // go to box below
+		return checkBox(x, r + height, c);
+		
+		else //start next column of boxes
+		return checkBox(x, 0, c + width);
 	}
 }
