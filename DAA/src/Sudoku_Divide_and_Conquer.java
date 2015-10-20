@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
 
 /*
@@ -28,7 +26,7 @@ public class Sudoku_Divide_and_Conquer {
 	public static int zCounter = 0;
 	public static int countLoop = 0;
 	public static Timer time = new Timer();
-
+	public boolean start = true;
 	/**
 	 * This is the main functions that solves any given sudoku puzzle.
 	 * @param args
@@ -109,16 +107,12 @@ public class Sudoku_Divide_and_Conquer {
 	 * @return
 	 */
 	public static void solver() {
-		for(int i = 0; i < pairs.size(); i++){
-			if(possibleVals(pairs.get(i))){
-				pairs.remove(i);
-				for (int k = 0; k < maxNum; k++) {							// print the completed sudoku
-					System.out.println(twoDArray.get(k) + " ");
-				}
-				solver();
-			}
+		if(!(possibleVals(pairs))){
+			System.out.println("All Solutions Checked. Nothing Worked. UNSOLVABLE");
 		}
-		
+		/*for(int k = 0; k < twoDArray.size(); k++){
+			System.out.println(twoDArray.get(k));
+		}*/
 	}
 
 	//compile solutions from checkers and determine next step
@@ -137,14 +131,14 @@ public class Sudoku_Divide_and_Conquer {
 			}
 			// System.out.println("Solved");
 			return true;
-		} else if (countLoop == Math.pow(maxNum, solution.size()) - 1) { 	// if all solutions have been checked UNSOLVABLE																										
+		} //else if (countLoop == Math.pow(maxNum, solution.size()) - 1) { 	// if all solutions have been checked UNSOLVABLE																										
 			//System.out.println("Rows are good?: " + checkRows(x));
 			//System.out.println("Columns are good?: " + checkCols(x));
 			//System.out.println("Boxs are good?: " + checkBoxes(x));
-			System.out.println("All Solutions Checked. Nothing Worked. UNSOLVABLE");
-			return true;
-		}
-		countLoop++;
+			
+			//return true;
+		//}
+		//countLoop++;
 		return false;
 	}
 
@@ -159,8 +153,10 @@ public class Sudoku_Divide_and_Conquer {
 		for (int i = 0; i < rows; i++) {								// Check every row
 			
 			for(int j = 0; j < x.get(i).size(); j++){
-				if((aa[x.get(i).get(j) - 1] += 1) > 1){
-					return false;
+				if(x.get(i).get(j) > 0){
+					if((aa[x.get(i).get(j) - 1] += 1) > 1){
+						return false;
+					}
 				}
 			}
 			
@@ -174,29 +170,84 @@ public class Sudoku_Divide_and_Conquer {
 		return true;
 	}
 	
-	private static boolean possibleVals(Pair p){
-		ArrayList<Integer> x_values = checkRows(twoDArray,p.getX());
-		if (x_values.size() == 1){
-			twoDArray.get(p.getX()).set(p.getY(), x_values.get(0));
+	private static boolean possibleVals(ArrayList<Pair> p){
+		
+		
+		if(checker(twoDArray)){
 			return true;
 		}
-		ArrayList<Integer> y_values = checkCols(twoDArray,p.getY());
-		if (y_values.size() == 1){
-			twoDArray.get(p.getX()).set(p.getY(), y_values.get(0));
-			return true;
-		}
-		ArrayList<Integer> box_values = validBoxVals(twoDArray, p.getX(), p.getY());
-		if (box_values.size() == 1){
-			twoDArray.get(p.getX()).set(p.getY(), box_values.get(0));
+		 
+		if(p == null){
 			return true;
 		}
 		
-		
-		
+			for(int i = 0; i < p.size(); i++){
+			
+			// Base Cases where x y or box has only 1 possible solution
+			ArrayList<Integer> x_values = checkRows(twoDArray,p.get(i).getX());
+			ArrayList<Integer> y_values = checkCols(twoDArray,p.get(i).getY());
+			ArrayList<Integer> box_values = validBoxVals(twoDArray, p.get(i).getX(), p.get(i).getY());
+
+			if(x_values.size() == 0 || y_values.size() == 0 || box_values.size() == 0){
+				return false;
+			}
+			
+			ArrayList<Integer> common_values = new ArrayList<Integer>();
+			int aa[] = new int[maxNum];
+
+			for(int x = 0; x < x_values.size(); x++){
+				aa[x_values.get(x) - 1] += 1;
+			}
+			
+			for(int y = 0; y < y_values.size(); y++){
+				aa[y_values.get(y) - 1] += 1;
+			}
+			
+			for(int box = 0; box < box_values.size(); box++){
+				aa[box_values.get(box) - 1] += 1;
+			}
+				
+			for(int k = 0; k < aa.length; k++){
+				if(aa[k] == 3){
+					common_values.add(k + 1);
+				}
+			}
+			
+			if (common_values.size() == 0){
+				return false;
+			}
+			
+			//ArrayList<Integer> smallest_values = compareArraySize(compareArraySize(x_values, y_values),box_values);
+	
+				for(int k = 0; k < common_values.size(); k++){
+					twoDArray.get(p.get(i).getX()).set(p.get(i).getY(), common_values.get(k));
+				
+					ArrayList<Pair> nextPairs = new ArrayList<Pair>();
+					
+					if(p.size() > 1){
+						for(int j = 1; j < p.size(); j++){
+							nextPairs.add(p.get(j));
+						}
+						if(possibleVals(nextPairs)){
+							return true;
+						}
+					}
+					else possibleVals(null);
+				}
+			
+	}
+
 		//System.out.println(x_values + " " + y_values + " " + box_values);
 		return false;
 	}
 	
+	/*private static ArrayList<Integer> compareArraySize(ArrayList<Integer> a, ArrayList<Integer> b){
+		if(a.size() < b.size()){
+			return a;
+		}
+		return b;
+	}
+	*/
 	private static ArrayList<Integer> checkRows(ArrayList<ArrayList<Integer>> x, int row) {
 		int aa[] = new int[maxNum]; 
 		ArrayList<Integer> list = new ArrayList<Integer>();
