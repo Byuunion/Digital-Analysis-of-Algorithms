@@ -30,7 +30,6 @@ public class Sudoku_Divide_and_Conquer {
 	public static int zCounter = 0;
 	public static int countLoop = 0;
 	public static Timer time = new Timer();
-	public static int go;
 	public static HashMap<Pair, ArrayList<Integer>> possibleVals = new HashMap<Pair, ArrayList<Integer>>();
 	
 	/**
@@ -39,7 +38,8 @@ public class Sudoku_Divide_and_Conquer {
 	 */
 	public static void main(String[] args) {		
 		time.start();
-		readFile(args[0]);
+		//readFile(args[0]);
+		readFile("b3");
 		time.stop();
 		System.out.println("It took " + time.getDuration() + " milliseconds to run this Sudoku program!");
 	}
@@ -96,6 +96,13 @@ public class Sudoku_Divide_and_Conquer {
 			maxNum = height * width;
 			bufferReader.close();
 			
+			/*
+			System.out.println("Initial Sudoku Puzzle");
+			for (int i = 0; i < twoDArray.size(); i++) {							// print the completed sudoku
+				System.out.println(twoDArray.get(i) + " ");
+			}
+			*/
+			
 			if(checker(twoDArray)){
 				return;
 			}
@@ -147,10 +154,13 @@ public class Sudoku_Divide_and_Conquer {
 		
 		for(int y : smallest){
 			twoDArray.get(p.getX()).set(p.getY(), y);
+			//System.out.println("Choosing blank cell at coordinate (" + p.getX() + ", " + p.getY() + ")");
+			//System.out.println("Inputting " + y + " in row " + p.getX() + " " + twoDArray.get(p.getX()));
 			if(solver()){
 				return true;
 			}
 			twoDArray.get(p.getX()).set(p.getY(), 0);
+			//System.out.println("Backtracking Inputting " + 0 + " in row " + p.getX() + " " + twoDArray.get(p.getX()));
 		}
 		return false;
 	}
@@ -179,8 +189,6 @@ public class Sudoku_Divide_and_Conquer {
 	 * @return will return false if no solution is found for the cell, making it unsolvable
 	 */
 	private static boolean getPossibleVals(){
-		go = 0;
-		
 		if (checker(twoDArray)){
 			return true;
 		}		
