@@ -3,8 +3,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+
 
 /*
  * To referance any part of the 2d array use this
@@ -26,20 +30,17 @@ public class Sudoku_Divide_and_Conquer {
 	public static int zCounter = 0;
 	public static int countLoop = 0;
 	public static Timer time = new Timer();
-	public boolean start = true;
+	public static int go;
+	public static HashMap<Pair, ArrayList<Integer>> possibleVals = new HashMap<Pair, ArrayList<Integer>>();
+	
 	/**
 	 * This is the main functions that solves any given sudoku puzzle.
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) {		
 		time.start();
-		readFile("test7");
-		
-		// System.out.println("Finished");
+		readFile(args[0]);
 		time.stop();
-		//System.out.println("The Number of Zeros were : " + solution.size());
-		//System.out.println("The Final Solution is: " + solution);
 		System.out.println("It took " + time.getDuration() + " milliseconds to run this Sudoku program!");
 	}
 	
@@ -94,99 +95,102 @@ public class Sudoku_Divide_and_Conquer {
 			}
 			maxNum = height * width;
 			bufferReader.close();
-			solver();
+			
+			if(checker(twoDArray)){
+				return;
+			}
+			
+			if(solver()){
+				return;
+			}
+			
+			else
+				System.out.println("Sudoku is UNSOLVABLE");
+			
+			
 		} catch (IOException | NumberFormatException ex) {
-			System.out.println("Error: " + fileName);
+			System.out.println("Error reading: " + fileName);
 		}
 	}
 	
-	// Function creates all possible solutions for sudoku. Each solution is checked before creating the next solution
 	/**
-	 * This function create all possible solutions for the sudoku puzzle, and each solutions is checked before creating the next solution
-	 * 
-	 * @return
+	 * This function will solve the puzzle by gathering all possible values of the cells and trying one value and
+	 * 			moving on to the next cell. If there is an error along the way the function will backtrack and
+	 * 			try another value for the cell.
+	 * @return	False is the sudoku with current values is unsolvable
 	 */
-	public static void solver() {
-		if(!(possibleVals(pairs))){
-			System.out.println("All Solutions Checked. Nothing Worked. UNSOLVABLE");
+	public static boolean solver() {
+		if(checker(twoDArray)){
+			return true;
 		}
-		/*for(int k = 0; k < twoDArray.size(); k++){
-			System.out.println(twoDArray.get(k));
-		}*/
+		
+		if(!(getPossibleVals())){
+			return false;
+		}
+		
+		Pair p = new Pair(0,0);
+		ArrayList<Integer> temp = new ArrayList<Integer>();
+		ArrayList<Integer> smallest = new ArrayList<Integer>();
+		
+		for(Map.Entry<Pair, ArrayList<Integer>> x : possibleVals.entrySet()){
+			Pair p1 = x.getKey();
+			if(twoDArray.get(p1.getX()).get(p1.getY()) != 0){
+				continue;
+			}
+			temp = x.getValue();
+			
+			if((temp.size() < smallest.size()) ||(smallest.size() == 0)){
+				smallest = temp;
+				p = x.getKey();
+			}
+		}
+		
+		for(int y : smallest){
+			twoDArray.get(p.getX()).set(p.getY(), y);
+			if(solver()){
+				return true;
+			}
+			twoDArray.get(p.getX()).set(p.getY(), 0);
+		}
+		return false;
 	}
-
-	//compile solutions from checkers and determine next step
+	
+	
 	/**
-	 * This function checks 
+	 * This function calls the individual box row and column checkers
 	 * @param x
-	 * @return
+	 * @return if all checkers return true the sudoku is complete
 	 */
-	public static boolean checker(ArrayList<ArrayList<Integer>> x) {
-		// System.out.println();
-		// System.out.println(countLoop+1);
-		if (checkRows(x) && checkCols(x) && checkBoxes2(x, 0, 0)) {					// if all checks are true sudoku is complete
+	public static boolean checker(ArrayList<ArrayList<Integer>> x) {		
+		if (checkRows(x) && checkCols(x) && checkBoxes(x, 0, 0)) {					// if all checks are true sudoku is complete			
 			System.out.println("The Complete Sudoku: ");					
 			for (int i = 0; i < x.size(); i++) {							// print the completed sudoku
 				System.out.println(x.get(i) + " ");
 			}
-			// System.out.println("Solved");
 			return true;
-		} //else if (countLoop == Math.pow(maxNum, solution.size()) - 1) { 	// if all solutions have been checked UNSOLVABLE																										
-			//System.out.println("Rows are good?: " + checkRows(x));
-			//System.out.println("Columns are good?: " + checkCols(x));
-			//System.out.println("Boxs are good?: " + checkBoxes(x));
-			
-			//return true;
-		//}
-		//countLoop++;
+		} 		
 		return false;
 	}
 
 	/**
-	 * This function checks the rows top to bottom utilizing an array checker instead of hashset
-	 * @param x
-	 * @return
+	 * This function populates a hashset using the coordinates of the cell as the key and an array of possible solutions
+	 * 			The possible solutions are only added if they are allowed in the box row and column of the cell
+	 * 
+	 * @return will return false if no solution is found for the cell, making it unsolvable
 	 */
-	private static boolean checkRows(ArrayList<ArrayList<Integer>> x) {
-		int aa[] = new int[maxNum]; 
-		int rows = x.size();											// total number of rows
-		for (int i = 0; i < rows; i++) {								// Check every row
-			
-			for(int j = 0; j < x.get(i).size(); j++){
-				if(x.get(i).get(j) > 0){
-					if((aa[x.get(i).get(j) - 1] += 1) > 1){
-						return false;
-					}
-				}
-			}
-			
-			for(int k = 0; k < aa.length; k++){
-				if(!(aa[k] == 1)){
-					return false;
-				}
-			}
-			Arrays.fill(aa, 0);
-		}
-		return true;
-	}
-	
-	private static boolean possibleVals(ArrayList<Pair> p){
+	private static boolean getPossibleVals(){
+		go = 0;
 		
-		
-		if(checker(twoDArray)){
+		if (checker(twoDArray)){
 			return true;
-		}
-		 
-		if(p == null){
-			return true;
-		}
-		
-			for(int i = 0; i < p.size(); i++){
-			
-			// Base Cases where x y or box has only 1 possible solution
-			ArrayList<Integer> x_values = checkRows(twoDArray,p.get(i).getX());
-			ArrayList<Integer> y_values = checkCols(twoDArray,p.get(i).getY());
-			ArrayList<Integer> box_values = validBoxVals(twoDArray, p.get(i).getX(), p.get(i).getY());
+		}		
+		for (Pair p : pairs){		
+			if(twoDArray.get(p.getX()).get(p.getY()) != 0){
+				continue;
+			}
+			ArrayList<Integer> x_values = rowVals(twoDArray,p.getX());
+			ArrayList<Integer> y_values = colVals(twoDArray,p.getY());
+			ArrayList<Integer> box_values = validBoxVals(twoDArray, p.getX(), p.getY());
 
 			if(x_values.size() == 0 || y_values.size() == 0 || box_values.size() == 0){
 				return false;
@@ -217,38 +221,47 @@ public class Sudoku_Divide_and_Conquer {
 				return false;
 			}
 			
-			//ArrayList<Integer> smallest_values = compareArraySize(compareArraySize(x_values, y_values),box_values);
-	
-				for(int k = 0; k < common_values.size(); k++){
-					twoDArray.get(p.get(i).getX()).set(p.get(i).getY(), common_values.get(k));
-				
-					ArrayList<Pair> nextPairs = new ArrayList<Pair>();
-					
-					if(p.size() > 1){
-						for(int j = 1; j < p.size(); j++){
-							nextPairs.add(p.get(j));
-						}
-						if(possibleVals(nextPairs)){
-							return true;
-						}
-					}
-					else possibleVals(null);
-				}
-			
-	}
-
-		//System.out.println(x_values + " " + y_values + " " + box_values);
-		return false;
-	}
-	
-	/*private static ArrayList<Integer> compareArraySize(ArrayList<Integer> a, ArrayList<Integer> b){
-		if(a.size() < b.size()){
-			return a;
+			else {
+				possibleVals.put(p,common_values);
+			}
 		}
-		return b;
+		
+		return true;
 	}
-	*/
-	private static ArrayList<Integer> checkRows(ArrayList<ArrayList<Integer>> x, int row) {
+	
+	/**
+	 * This function checks the rows top to bottom utilizing an array checker instead of hashset
+	 * @param x
+	 * @return
+	 */
+	private static boolean checkRows(ArrayList<ArrayList<Integer>> x) {
+		int aa[] = new int[maxNum]; 
+		int rows = x.size();											// total number of rows
+		for (int i = 0; i < rows; i++) {								// Check every row			
+			for(int j = 0; j < x.get(i).size(); j++){
+				if(x.get(i).get(j) > 0){
+					if((aa[x.get(i).get(j) - 1] += 1) > 1){
+						return false;
+					}
+				}
+			}			
+			for(int k = 0; k < aa.length; k++){
+				if(!(aa[k] == 1)){
+					return false;
+				}
+			}
+			Arrays.fill(aa, 0);
+		}
+		return true;
+	}
+	
+	/**
+	 * This function will check only the specified row
+	 * @param x		the 2D arrayList that contains the sudoku
+	 * @param row	the row to which the cell belongs
+	 * @return
+	 */
+	private static ArrayList<Integer> rowVals(ArrayList<ArrayList<Integer>> x, int row) {
 		int aa[] = new int[maxNum]; 
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		
@@ -266,7 +279,6 @@ public class Sudoku_Divide_and_Conquer {
 		return list;
 	}
 
-	// Checks columns left to right using 
 	/**
 	 * This function checks the columns from left to right and checks for duplicates using Hashsets
 	 * @param x
@@ -286,11 +298,17 @@ public class Sudoku_Divide_and_Conquer {
 		return true; 
 	}
 	
-	private static ArrayList<Integer> checkCols(ArrayList<ArrayList<Integer>> x, int col) {
+	/**
+	 * This function gives the possible values for the specified column that are allowed in the cell
+	 * @param x		The arrayList containing the Sudoku
+	 * @param col	The column to which the cell being checked belongs
+	 * @return		The list containing all possible values for the cell
+	 */	
+	private static ArrayList<Integer> colVals(ArrayList<ArrayList<Integer>> x, int col) {
 		int aa[] = new int[maxNum]; 
 		ArrayList<Integer> list = new ArrayList<Integer>();
 
-		for (int i = 0; i < x.size(); i++) {						//Iterate each row downwards j = row index
+		for (int i = 0; i < x.size(); i++) {							//Iterate each row downwards j = row index
 			if(x.get(i).get(col) > 0){									// Only add non-zeros to the array
 				aa[x.get(i).get(col) - 1] += 1;							// Adds the non blank values to the array
 			}
@@ -312,7 +330,7 @@ public class Sudoku_Divide_and_Conquer {
 	 * @param x The sudoku puzzle. 
 	 * @return Returns true if all the boxes in the sudoku puzzle are a valid solution to the puzzle and returns false if otherwise.
 	 */
-	private static boolean checkBoxes2(ArrayList<ArrayList<Integer>> x, int r, int c) {
+	private static boolean checkBoxes(ArrayList<ArrayList<Integer>> x, int r, int c) {
 	
 		Set<Integer> set = new HashSet<Integer>();
 		
@@ -330,12 +348,19 @@ public class Sudoku_Divide_and_Conquer {
 		return true;
 		
 		else if (r < maxNum - height) // go to box below
-		return checkBoxes2(x, r + height, c);
+		return checkBoxes(x, r + height, c);
 		
 		else //start next column of boxes
-		return checkBoxes2(x, 0, c + width);
+		return checkBoxes(x, 0, c + width);
 	}
 	
+	/**
+	 * This function gives the possible values for the specified box that are allowed in the cell
+	 * @param x		The 2d ArrayList containing the Sudoku
+	 * @param r		The row coordinate of the cell
+	 * @param c		The column coordinate of the cell
+	 * @return		The list of possible values for the cell
+	 */
 	private static ArrayList<Integer> validBoxVals(ArrayList<ArrayList<Integer>> x, int r, int c) {
 		int aa[] = new int[maxNum]; 
 		int x_cord = (r / height) * height;
@@ -347,11 +372,8 @@ public class Sudoku_Divide_and_Conquer {
 			for(int j = x_cord; j <= x_cord + height-1; j++){
 				if(x.get(j).get(k) > 0){								
 					aa[x.get(j).get(k) - 1] += 1;							
-				}
-				
-				
-			}
-			
+				}			
+			}			
 		}
 		for(int i = 0; i < aa.length; i++){
 			if(!(aa[i] == 1)){
@@ -360,5 +382,4 @@ public class Sudoku_Divide_and_Conquer {
 		}
 		return list;
 	}
-
 }
